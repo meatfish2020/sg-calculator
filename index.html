@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SG & Brix Temperature Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .calculator {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        h2 {
+            color: #333;
+            font-size: 18px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4CAF50;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        .results {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+        .results h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #333;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .result-row:last-child {
+            border-bottom: none;
+        }
+        .result-label {
+            color: #666;
+            font-weight: bold;
+        }
+        .result-value {
+            color: #333;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .note {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            font-size: 14px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>SG & Brix Temperature Calculator</h1>
+        
+        <div class="section">
+            <h2>Sugar Addition Calculator</h2>
+            <div class="input-group">
+                <label for="initialSg">Current/Initial SG:</label>
+                <input type="number" id="initialSg" step="0.001" placeholder="e.g., 1.040" min="0.990" max="1.200">
+            </div>
+            
+            <div class="input-group">
+                <label for="volumeLiters">Volume (Liters):</label>
+                <input type="number" id="volumeLiters" step="0.1" placeholder="e.g., 20.0" min="0.1">
+            </div>
+            
+            <div class="input-group">
+                <label for="targetType">Target Type:</label>
+                <select id="targetType">
+                    <option value="sg">Target SG</option>
+                    <option value="brix">Target Brix</option>
+                    <option value="abv-dry">Target ABV (ferment dry to 0.990)</option>
+                    <option value="abv-sweet">Target ABV (stop at specific FG)</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label for="targetValue">Target Value:</label>
+                <input type="number" id="targetValue" step="0.001" placeholder="e.g., 1.080 or 12.5">
+            </div>
+            
+            <div class="input-group" id="sweetFgGroup" style="display: none;">
+                <label for="sweetFg">Final SG for Sweet Wine:</label>
+                <input type="number" id="sweetFg" step="0.001" placeholder="e.g., 1.010" min="0.990" max="1.100">
+            </div>
+            
+            <div class="results">
+                <h3>Sugar Addition Results</h3>
+                
+                <div class="result-row">
+                    <span class="result-label">Target SG:</span>
+                    <span class="result-value" id="calcTargetSg">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Target Brix:</span>
+                    <span class="result-value" id="calcTargetBrix">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Sugar to Add:</span>
+                    <span class="result-value" id="sugarAmount">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Expected ABV:</span>
+                    <span class="result-value" id="expectedAbv">-</span>
+                </div>
+                
+                <div class="result-row" id="sweetFinalSgRow" style="display: none;">
+                    <span class="result-label">Will Stop At:</span>
+                    <span class="result-value" id="sweetFinalSg">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Original Gravity Measurement</h2>
+            <div class="input-group">
+                <label for="sg">Specific Gravity (measured):</label>
+                <input type="number" id="sg" step="0.001" placeholder="e.g., 1.050" min="0.990" max="1.200">
+            </div>
+            
+            <div class="input-group">
+                <label for="temp">Current Temperature (°C):</label>
+                <input type="number" id="temp" step="0.1" placeholder="e.g., 25.0">
+            </div>
+            
+            <div class="input-group">
+                <label for="targetAbv">Target ABV (%):</label>
+                <input type="number" id="targetAbv" step="0.1" placeholder="e.g., 6.5" min="0" max="20">
+            </div>
+            
+            <div class="results">
+                <h3>Results</h3>
+                
+                <div class="result-row">
+                    <span class="result-label">SG at 20°C:</span>
+                    <span class="result-value" id="sg20">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Brix at Current Temp:</span>
+                    <span class="result-value" id="brixCurrent">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Brix at 20°C:</span>
+                    <span class="result-value" id="brix20">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Target ABV (if fermented dry):</span>
+                    <span class="result-value" id="abv">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Stop Fermentation At:</span>
+                    <span class="result-value" id="targetFg">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Final Gravity Check</h2>
+            <div class="input-group">
+                <label for="fgMeasured">Final SG (measured):</label>
+                <input type="number" id="fgMeasured" step="0.001" placeholder="e.g., 1.010" min="0.990" max="1.200">
+            </div>
+            
+            <div class="input-group">
+                <label for="fgTemp">Temperature at Measurement (°C):</label>
+                <input type="number" id="fgTemp" step="0.1" placeholder="e.g., 22.0">
+            </div>
+            
+            <div class="results">
+                <h3>Final Gravity Results</h3>
+                
+                <div class="result-row">
+                    <span class="result-label">FG Corrected to 20°C:</span>
+                    <span class="result-value" id="fgCorrected">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Actual ABV:</span>
+                    <span class="result-value" id="actualAbv">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Comparison to Target:</span>
+                    <span class="result-value" id="comparison">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="note">
+            <strong>Note:</strong> This calculator uses standard temperature correction formulas. Reference temperature is 20°C (68°F). The correction factor is approximately 0.00031 per °C difference.
+        </div>
+    </div>
+
+    <script>
+        const sgInput = document.getElementById('sg');
+        const tempInput = document.getElementById('temp');
+        const targetAbvInput = document.getElementById('targetAbv');
+        const sg20Output = document.getElementById('sg20');
+        const brixCurrentOutput = document.getElementById('brixCurrent');
+        const brix20Output = document.getElementById('brix20');
+        const abvOutput = document.getElementById('abv');
+        const targetFgOutput = document.getElementById('targetFg');
+        
+        const fgMeasuredInput = document.getElementById('fgMeasured');
+        const fgTempInput = document.getElementById('fgTemp');
+        const fgCorrectedOutput = document.getElementById('fgCorrected');
+        const actualAbvOutput = document.getElementById('actualAbv');
+        const comparisonOutput = document.getElementById('comparison');
+        
+        const initialSgInput = document.getElementById('initialSg');
+        const volumeLitersInput = document.getElementById('volumeLiters');
+        const targetTypeSelect = document.getElementById('targetType');
+        const targetValueInput = document.getElementById('targetValue');
+        const sweetFgInput = document.getElementById('sweetFg');
+        const sweetFgGroup = document.getElementById('sweetFgGroup');
+        const sweetFinalSgRow = document.getElementById('sweetFinalSgRow');
+        const calcTargetSgOutput = document.getElementById('calcTargetSg');
+        const calcTargetBrixOutput = document.getElementById('calcTargetBrix');
+        const sugarAmountOutput = document.getElementById('sugarAmount');
+        const expectedAbvOutput = document.getElementById('expectedAbv');
+        const sweetFinalSgOutput = document.getElementById('sweetFinalSg');
+        
+        // Convert SG to Brix
+        function sgToBrix(specificGravity) {
+            return 135.997 * Math.pow(specificGravity, 3) - 
+                   630.272 * Math.pow(specificGravity, 2) + 
+                   1111.14 * specificGravity - 
+                   616.868;
+        }
+        
+        // Convert Brix to SG (approximate inverse)
+        function brixToSg(brix) {
+            // Approximate formula: SG = 1 + (Brix / 258.6)
+            // More accurate iterative approach
+            let sg = 1 + (brix / 261.3);
+            // Refine with Newton's method
+            for (let i = 0; i < 5; i++) {
+                const calculatedBrix = sgToBrix(sg);
+                const error = brix - calculatedBrix;
+                sg += error / 261.3;
+            }
+            return sg;
+        }
+        
+        // Show/hide sweet wine FG input
+        targetTypeSelect.addEventListener('change', function() {
+            if (this.value === 'abv-sweet') {
+                sweetFgGroup.style.display = 'block';
+                sweetFinalSgRow.style.display = 'flex';
+            } else {
+                sweetFgGroup.style.display = 'none';
+                sweetFinalSgRow.style.display = 'none';
+            }
+            calculateSugarAddition();
+        });
+        
+        function calculateSugarAddition() {
+            const initialSg = parseFloat(initialSgInput.value);
+            const volumeLiters = parseFloat(volumeLitersInput.value);
+            const targetType = targetTypeSelect.value;
+            const targetValue = parseFloat(targetValueInput.value);
+            const sweetFg = parseFloat(sweetFgInput.value);
+            
+            if (isNaN(initialSg) || isNaN(volumeLiters) || isNaN(targetValue)) {
+                calcTargetSgOutput.textContent = '-';
+                calcTargetBrixOutput.textContent = '-';
+                sugarAmountOutput.textContent = '-';
+                expectedAbvOutput.textContent = '-';
+                sweetFinalSgOutput.textContent = '-';
+                return;
+            }
+            
+            let targetSg;
+            let finalSg = 0.990; // Default to dry fermentation
+            
+            // Determine target SG based on input type
+            if (targetType === 'sg') {
+                targetSg = targetValue;
+            } else if (targetType === 'brix') {
+                targetSg = brixToSg(targetValue);
+            } else if (targetType === 'abv-dry') {
+                // Calculate required OG for target ABV with FG = 0.990
+                targetSg = 0.990 + (targetValue / 131.25);
+            } else if (targetType === 'abv-sweet') {
+                if (isNaN(sweetFg) || sweetFg < 0.990) {
+                    calcTargetSgOutput.textContent = 'Need valid FG';
+                    calcTargetBrixOutput.textContent = '-';
+                    sugarAmountOutput.textContent = '-';
+                    expectedAbvOutput.textContent = '-';
+                    sweetFinalSgOutput.textContent = '-';
+                    return;
+                }
+                finalSg = sweetFg;
+                targetSg = sweetFg + (targetValue / 131.25);
+                sweetFinalSgOutput.textContent = sweetFg.toFixed(4);
+            }
+            
+            // Calculate sugar needed
+            // Sugar adds approximately 0.046 SG points per kg per liter
+            // Or approximately 46 gravity points per kg per liter
+            const sgIncrease = targetSg - initialSg;
+            if (sgIncrease <= 0) {
+                calcTargetSgOutput.textContent = 'Already above target';
+                calcTargetBrixOutput.textContent = '-';
+                sugarAmountOutput.textContent = '0 kg (0 g)';
+                expectedAbvOutput.textContent = '-';
+                return;
+            }
+            
+            // Sugar addition: kg = (SG increase × volume in liters) / 0.046
+            const sugarKg = (sgIncrease * volumeLiters) / 0.046;
+            const sugarGrams = sugarKg * 1000;
+            
+            // Calculate expected ABV
+            const expectedAbv = (targetSg - finalSg) * 131.25;
+            
+            // Display results
+            calcTargetSgOutput.textContent = targetSg.toFixed(4);
+            calcTargetBrixOutput.textContent = sgToBrix(targetSg).toFixed(2) + '°Bx';
+            sugarAmountOutput.textContent = sugarKg.toFixed(3) + ' kg (' + sugarGrams.toFixed(0) + ' g)';
+            expectedAbvOutput.textContent = expectedAbv.toFixed(2) + '%';
+        }
+
+        function calculateResults() {
+            const sg = parseFloat(sgInput.value);
+            const temp = parseFloat(tempInput.value);
+            
+            if (isNaN(sg) || isNaN(temp)) {
+                sg20Output.textContent = '-';
+                brixCurrentOutput.textContent = '-';
+                brix20Output.textContent = '-';
+                abvOutput.textContent = '-';
+                targetFgOutput.textContent = '-';
+                return;
+            }
+            
+            // Temperature correction for SG
+            // Standard correction factor: approximately 0.00031 per degree C
+            const tempDiff = temp - 20;
+            const correctionFactor = 0.00031 * tempDiff;
+            const sgCorrected = sg + correctionFactor;
+            
+            const brixCurrent = sgToBrix(sg);
+            const brix20 = sgToBrix(sgCorrected);
+            
+            // Calculate ABV if fermented dry (final gravity 0.990)
+            const finalGravity = 0.990;
+            // ABV formula: (OG - FG) * 131.25
+            const abv = (sgCorrected - finalGravity) * 131.25;
+            
+            // Calculate target FG for desired ABV
+            const targetAbv = parseFloat(targetAbvInput.value);
+            let targetFgText = '-';
+            if (!isNaN(targetAbv)) {
+                // Rearranging ABV formula: FG = OG - (ABV / 131.25)
+                const targetFg = sgCorrected - (targetAbv / 131.25);
+                if (targetFg >= 0.990 && targetFg < sgCorrected) {
+                    targetFgText = targetFg.toFixed(4);
+                } else if (targetFg < 0.990) {
+                    targetFgText = 'Below 0.990 (ferment dry)';
+                } else {
+                    targetFgText = 'Invalid (ABV too low)';
+                }
+            }
+            
+            // Display results
+            sg20Output.textContent = sgCorrected.toFixed(4);
+            brixCurrentOutput.textContent = brixCurrent.toFixed(2) + '°Bx';
+            brix20Output.textContent = brix20.toFixed(2) + '°Bx';
+            abvOutput.textContent = abv.toFixed(2) + '%';
+            targetFgOutput.textContent = targetFgText;
+        }
+        
+        function calculateFinalGravity() {
+            const fgMeasured = parseFloat(fgMeasuredInput.value);
+            const fgTemp = parseFloat(fgTempInput.value);
+            const ogCorrected = parseFloat(sg20Output.textContent);
+            
+            if (isNaN(fgMeasured) || isNaN(fgTemp)) {
+                fgCorrectedOutput.textContent = '-';
+                actualAbvOutput.textContent = '-';
+                comparisonOutput.textContent = '-';
+                return;
+            }
+            
+            // Temperature correction for FG
+            const fgTempDiff = fgTemp - 20;
+            const fgCorrectionFactor = 0.00031 * fgTempDiff;
+            const fgCorrected = fgMeasured + fgCorrectionFactor;
+            
+            // Calculate actual ABV
+            let actualAbvText = '-';
+            let comparisonText = '-';
+            
+            if (!isNaN(ogCorrected)) {
+                const actualAbv = (ogCorrected - fgCorrected) * 131.25;
+                actualAbvText = actualAbv.toFixed(2) + '%';
+                
+                // Compare to target FG if available
+                const targetFgValue = parseFloat(targetFgOutput.textContent);
+                if (!isNaN(targetFgValue)) {
+                    const difference = fgCorrected - targetFgValue;
+                    if (Math.abs(difference) < 0.001) {
+                        comparisonText = '✓ At target';
+                    } else if (difference > 0) {
+                        comparisonText = '↑ ' + Math.abs(difference).toFixed(4) + ' above target';
+                    } else {
+                        comparisonText = '↓ ' + Math.abs(difference).toFixed(4) + ' below target';
+                    }
+                }
+            }
+            
+            fgCorrectedOutput.textContent = fgCorrected.toFixed(4);
+            actualAbvOutput.textContent = actualAbvText;
+            comparisonOutput.textContent = comparisonText;
+        }
+
+        sgInput.addEventListener('input', calculateResults);
+        tempInput.addEventListener('input', calculateResults);
+        targetAbvInput.addEventListener('input', calculateResults);
+        
+        fgMeasuredInput.addEventListener('input', calculateFinalGravity);
+        fgTempInput.addEventListener('input', calculateFinalGravity);
+        sgInput.addEventListener('input', calculateFinalGravity);
+        tempInput.addEventListener('input', calculateFinalGravity);
+        targetAbvInput.addEventListener('input', calculateFinalGravity);
+        
+        initialSgInput.addEventListener('input', calculateSugarAddition);
+        volumeLitersInput.addEventListener('input', calculateSugarAddition);
+        targetValueInput.addEventListener('input', calculateSugarAddition);
+        sweetFgInput.addEventListener('input', calculateSugarAddition);
+    </script>
+</body>
+</html>
