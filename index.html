@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SG & Brix Temperature Calculator</title>
+    <title>Wine and Cidermaker's Complete Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 600px;
+            max-width: 800px;
             margin: 40px auto;
             padding: 20px;
             background-color: #f5f5f5;
@@ -43,7 +43,7 @@
             color: #555;
             font-weight: bold;
         }
-        input {
+        input, select {
             width: 100%;
             padding: 10px;
             border: 2px solid #ddd;
@@ -51,7 +51,7 @@
             font-size: 16px;
             box-sizing: border-box;
         }
-        input:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #4CAF50;
         }
@@ -93,11 +93,53 @@
             font-size: 14px;
             color: #856404;
         }
+        .formula-selector {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4f8;
+            border-left: 4px solid #2196F3;
+            border-radius: 4px;
+        }
+        .formula-selector label {
+            font-weight: bold;
+            color: #1565C0;
+            margin-bottom: 10px;
+        }
+        .formula-selector select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #2196F3;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .formula-info {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
     <div class="calculator">
-        <h1>SG & Brix Temperature Calculator</h1>
+        <h1>Wine and Cidermaker's Complete Calculator</h1>
+        
+        <div class="formula-selector">
+            <label for="abvFormula">ABV Calculation Formula:</label>
+            <select id="abvFormula">
+                <option value="135.87">CJJ Berry / UK Standard (× 135.87 or ÷ 7.36)</option>
+                <option value="131.25">US Brewing Standard (× 131.25)</option>
+                <option value="133">Alternative (× 133)</option>
+            </select>
+            <div class="formula-info">
+                <strong>Formula Guide:</strong><br>
+                • <strong>CJJ Berry (135.87)</strong> - UK winemaking standard from "First Steps in Winemaking". Most accurate for wines, especially at higher ABV.<br>
+                • <strong>US Brewing (131.25)</strong> - Common in North American brewing literature. Works well for beers and lower ABV fermentations.<br>
+                • <strong>Alternative (133)</strong> - A middle ground used by some winemakers.<br>
+                All formulas give similar results; differences are typically less than 0.5% ABV.
+            </div>
+        </div>
         
         <div class="section">
             <h2>Sugar Addition Calculator</h2>
@@ -240,8 +282,374 @@
             </div>
         </div>
         
+        <div class="section">
+            <h2>pH & Acid Management</h2>
+            
+            <div class="input-group">
+                <label for="phMeasured">Measured pH:</label>
+                <input type="number" id="phMeasured" step="0.01" placeholder="e.g., 3.8" min="2.5" max="5.0">
+            </div>
+            
+            <div class="input-group">
+                <label for="phTemp">Temperature at Measurement (°C):</label>
+                <input type="number" id="phTemp" step="0.1" placeholder="e.g., 22.0">
+            </div>
+            
+            <div class="input-group">
+                <label for="phVolume">Volume (Liters):</label>
+                <input type="number" id="phVolume" step="0.1" placeholder="e.g., 5.0" min="0.1">
+            </div>
+            
+            <div class="input-group">
+                <label for="targetPh">Target pH:</label>
+                <input type="number" id="targetPh" step="0.1" placeholder="e.g., 3.4" min="2.5" max="5.0">
+            </div>
+            
+            <div class="input-group">
+                <label for="acidType">Acid Type:</label>
+                <select id="acidType">
+                    <option value="tartaric">Tartaric Acid (strongest, wine standard)</option>
+                    <option value="malic">Malic Acid (medium strength)</option>
+                    <option value="citric">Citric Acid (not recommended for wine)</option>
+                    <option value="blend">Acid Blend (mixed)</option>
+                </select>
+            </div>
+            
+            <div class="results">
+                <h3>pH Results</h3>
+                
+                <div class="result-row">
+                    <span class="result-label">pH Corrected to 20°C:</span>
+                    <span class="result-value" id="phCorrected">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Acid to Add (Initial):</span>
+                    <span class="result-value" id="acidAmount">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Estimated TA Increase:</span>
+                    <span class="result-value" id="taIncrease">-</span>
+                </div>
+            </div>
+            
+            <div class="note">
+                <strong>Important:</strong> Add 50-70% of calculated acid, mix thoroughly, wait 15 minutes, then test pH again before adding more. Different fruits respond differently to acid additions.
+                <br><br>
+                <strong>About TA (Titratable Acidity):</strong> TA measures the total acid content in g/L (as tartaric acid equivalent). pH measures acid strength. Both are important - wine typically needs pH 3.2-3.6 and TA 6-8 g/L. Commercial winemakers measure both, but pH meters are more accessible for home winemakers.
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Sulphite (SO₂) Management</h2>
+            
+            <div class="input-group">
+                <label for="so2Ph">Juice/Wine pH:</label>
+                <input type="number" id="so2Ph" step="0.1" placeholder="e.g., 3.5" min="2.5" max="5.0">
+            </div>
+            
+            <div class="input-group">
+                <label for="so2Volume">Volume (Liters):</label>
+                <input type="number" id="so2Volume" step="0.1" placeholder="e.g., 20.0" min="0.1">
+            </div>
+            
+            <div class="input-group">
+                <label for="so2Dosage">Dosage Level:</label>
+                <select id="so2Dosage">
+                    <option value="full">Full Dosage (wine/clean fermentation)</option>
+                    <option value="half">Half Dosage (cider/allow wild yeast character)</option>
+                </select>
+            </div>
+            
+            <div class="results">
+                <h3>SO₂ Addition Results</h3>
+                
+                <div class="result-row">
+                    <span class="result-label">SO₂ Needed (ppm):</span>
+                    <span class="result-value" id="so2Ppm">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Sodium/Potassium Metabisulphite:</span>
+                    <span class="result-value" id="metabisulphite">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Campden Tablets:</span>
+                    <span class="result-value" id="campdenTablets">-</span>
+                </div>
+            </div>
+            
+            <div class="note">
+                <strong>Note:</strong> SO₂ calculations based on pH levels from cider/winemaking standards. Below pH 3.0, no sulphite needed. One Campden tablet ≈ 50 ppm SO₂ in 1 UK gallon (4.546L) or 60 ppm in 1 US gallon (3.785L). These are initial addition rates; actual needs may vary. Half dosage allows some wild yeast activity which can add complexity and character to ciders.
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>PPM Calculator</h2>
+            
+            <div class="input-group">
+                <label for="ppmValue">PPM Value:</label>
+                <input type="number" id="ppmValue" step="1" placeholder="e.g., 50" min="0">
+            </div>
+            
+            <div class="input-group">
+                <label for="ppmVolume">Volume (Liters):</label>
+                <input type="number" id="ppmVolume" step="0.1" placeholder="e.g., 20.0" min="0.1">
+            </div>
+            
+            <div class="results">
+                <h3>PPM Conversion Results</h3>
+                
+                <div class="result-row">
+                    <span class="result-label">Grams Needed:</span>
+                    <span class="result-value" id="ppmGrams">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Milligrams Needed:</span>
+                    <span class="result-value" id="ppmMg">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Milliliters (if liquid):</span>
+                    <span class="result-value" id="ppmMl">-</span>
+                </div>
+            </div>
+            
+            <div class="note">
+                <strong>Note:</strong> PPM (parts per million) = mg/L. Milliliter conversion assumes liquid density similar to water (1 g/ml). For precise liquid additives, check specific gravity of the solution.
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Blending Calculator</h2>
+            
+            <h3 style="font-size: 16px; margin-top: 0;">Batch A</h3>
+            <div class="input-group">
+                <label for="blendVolA">Volume A (Liters):</label>
+                <input type="number" id="blendVolA" step="0.1" placeholder="e.g., 10.0" min="0.1">
+            </div>
+            
+            <div class="input-group">
+                <label for="blendAbvA">ABV A (%):</label>
+                <input type="number" id="blendAbvA" step="0.1" placeholder="e.g., 12.5">
+            </div>
+            
+            <div class="input-group">
+                <label for="blendSgA">SG A:</label>
+                <input type="number" id="blendSgA" step="0.001" placeholder="e.g., 0.995">
+            </div>
+            
+            <h3 style="font-size: 16px; margin-top: 20px;">Batch B</h3>
+            <div class="input-group">
+                <label for="blendVolB">Volume B (Liters):</label>
+                <input type="number" id="blendVolB" step="0.1" placeholder="e.g., 5.0" min="0.1">
+            </div>
+            
+            <div class="input-group">
+                <label for="blendAbvB">ABV B (%):</label>
+                <input type="number" id="blendAbvB" step="0.1" placeholder="e.g., 10.0">
+            </div>
+            
+            <div class="input-group">
+                <label for="blendSgB">SG B:</label>
+                <input type="number" id="blendSgB" step="0.001" placeholder="e.g., 1.005">
+            </div>
+            
+            <div class="results">
+                <h3>Blended Result</h3>
+                
+                <div class="result-row">
+                    <span class="result-label">Total Volume:</span>
+                    <span class="result-value" id="blendTotalVol">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Final ABV:</span>
+                    <span class="result-value" id="blendFinalAbv">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Final SG:</span>
+                    <span class="result-value" id="blendFinalSg">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Dilution Calculator</h2>
+            
+            <div class="input-group">
+                <label for="dilOrigVol">Original Volume (Liters):</label>
+                <input type="number" id="dilOrigVol" step="0.1" placeholder="e.g., 20.0" min="0.1">
+            </div>
+            
+            <div class="input-group">
+                <label for="dilOrigAbv">Original ABV (%):</label>
+                <input type="number" id="dilOrigAbv" step="0.1" placeholder="e.g., 14.0">
+            </div>
+            
+            <div class="input-group">
+                <label for="dilOrigSg">Original SG:</label>
+                <input type="number" id="dilOrigSg" step="0.001" placeholder="e.g., 0.995">
+            </div>
+            
+            <div class="input-group">
+                <label for="dilTargetAbv">Target ABV (%):</label>
+                <input type="number" id="dilTargetAbv" step="0.1" placeholder="e.g., 12.0">
+            </div>
+            
+            <div class="results">
+                <h3>Dilution Results</h3>
+                
+                <div class="result-row">
+                    <span class="result-label">Water to Add:</span>
+                    <span class="result-value" id="dilWaterAdd">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Final Volume:</span>
+                    <span class="result-value" id="dilFinalVol">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Final SG:</span>
+                    <span class="result-value" id="dilFinalSg">-</span>
+                </div>
+            </div>
+            
+            <div class="note">
+                <strong>Note:</strong> Dilution will also reduce acidity, tannins, and flavor intensity proportionally. Add water slowly and taste as you go.
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Unit Conversions</h2>
+            
+            <h3 style="font-size: 16px; margin-top: 0;">Weight Conversion</h3>
+            <div class="input-group">
+                <label for="weightInput">Enter Weight:</label>
+                <input type="number" id="weightInput" step="0.01" placeholder="e.g., 100">
+            </div>
+            
+            <div class="input-group">
+                <label for="weightUnit">Unit:</label>
+                <select id="weightUnit">
+                    <option value="g">Grams (g)</option>
+                    <option value="kg">Kilograms (kg)</option>
+                    <option value="oz">Ounces (oz)</option>
+                    <option value="lbs">Pounds (lbs)</option>
+                </select>
+            </div>
+            
+            <div class="results">
+                <h3>Weight Equivalents</h3>
+                
+                <div class="result-row">
+                    <span class="result-label">Grams:</span>
+                    <span class="result-value" id="convGrams">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Kilograms:</span>
+                    <span class="result-value" id="convKg">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Ounces:</span>
+                    <span class="result-value" id="convOz">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Pounds:</span>
+                    <span class="result-value" id="convLbs">-</span>
+                </div>
+            </div>
+            
+            <h3 style="font-size: 16px; margin-top: 20px;">Volume Conversion</h3>
+            <div class="input-group">
+                <label for="volumeInput">Enter Volume:</label>
+                <input type="number" id="volumeInput" step="0.01" placeholder="e.g., 5">
+            </div>
+            
+            <div class="input-group">
+                <label for="volumeUnit">Unit:</label>
+                <select id="volumeUnit">
+                    <option value="l">Liters (L)</option>
+                    <option value="ukgal">UK Gallons</option>
+                    <option value="usgal">US Gallons</option>
+                    <option value="ukpint">UK Pints</option>
+                    <option value="uspint">US Pints</option>
+                    <option value="ml">Milliliters (ml)</option>
+                </select>
+            </div>
+            
+            <div class="results">
+                <h3>Volume Equivalents</h3>
+                
+                <div class="result-row">
+                    <span class="result-label">Liters:</span>
+                    <span class="result-value" id="convLiters">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Milliliters:</span>
+                    <span class="result-value" id="convMl">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">UK Gallons:</span>
+                    <span class="result-value" id="convUkGal">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">US Gallons:</span>
+                    <span class="result-value" id="convUsGal">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">UK Pints:</span>
+                    <span class="result-value" id="convUkPint">-</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">US Pints:</span>
+                    <span class="result-value" id="convUsPint">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Quick Reference Guide</h2>
+            
+            <div class="formula-info">
+                <strong>Pectolase (Pectic Enzyme)</strong><br>
+                • Cold pressed juice: 1 tsp per gallon<br>
+                • Boiled/heated must: 2 tsp per gallon<br>
+                • Add before fermentation for best results<br>
+                <br>
+                <strong>Yeast Nutrient</strong><br>
+                • Follow packet instructions (typically 1 tsp per gallon)<br>
+                • Essential for non-grape wines and meads<br>
+                • Add at start of fermentation<br>
+                <br>
+                <strong>Tannin</strong><br>
+                • Red wine: 0.5-2 g/L (added during fermentation)<br>
+                • White wine: 0.1-0.5 g/L (if needed for structure)<br>
+                • Cider: 0.2-1 g/L (for body and mouthfeel)<br>
+                • Add gradually and taste - too much creates astringency<br>
+                <br>
+                <strong>Target Ranges</strong><br>
+                • pH: 3.2-3.6 (wine), 3.2-3.8 (cider)<br>
+                • TA: 6-8 g/L (wine), 4-8 g/L (cider)<br>
+                • ABV: 11-14% (table wine), 5-8% (cider), 12-18% (dessert wine)
+            </div>
+        </div>
+        
         <div class="note">
-            <strong>Note:</strong> This calculator uses standard temperature correction formulas. Reference temperature is 20°C (68°F). The correction factor is approximately 0.00031 per °C difference.
+            <strong>Note:</strong> This calculator uses standard temperature correction formulas. Reference temperature is 20°C (68°F). The correction factor is approximately 0.00031 per °C difference. Sugar addition calculations are based on CJJ Berry's factor of 0.36 SG points per kg per liter (from "First Steps in Winemaking"). You can select your preferred ABV calculation formula from the dropdown above.
         </div>
     </div>
 
@@ -274,6 +682,13 @@
         const expectedAbvOutput = document.getElementById('expectedAbv');
         const sweetFinalSgOutput = document.getElementById('sweetFinalSg');
         
+        const abvFormulaSelect = document.getElementById('abvFormula');
+        
+        // Get current ABV formula multiplier
+        function getAbvMultiplier() {
+            return parseFloat(abvFormulaSelect.value);
+        }
+        
         // Convert SG to Brix
         function sgToBrix(specificGravity) {
             return 135.997 * Math.pow(specificGravity, 3) - 
@@ -284,10 +699,7 @@
         
         // Convert Brix to SG (approximate inverse)
         function brixToSg(brix) {
-            // Approximate formula: SG = 1 + (Brix / 258.6)
-            // More accurate iterative approach
             let sg = 1 + (brix / 261.3);
-            // Refine with Newton's method
             for (let i = 0; i < 5; i++) {
                 const calculatedBrix = sgToBrix(sg);
                 const error = brix - calculatedBrix;
@@ -325,16 +737,15 @@
             }
             
             let targetSg;
-            let finalSg = 0.990; // Default to dry fermentation
+            let finalSg = 0.990;
             
-            // Determine target SG based on input type
             if (targetType === 'sg') {
                 targetSg = targetValue;
             } else if (targetType === 'brix') {
                 targetSg = brixToSg(targetValue);
             } else if (targetType === 'abv-dry') {
-                // Calculate required OG for target ABV with FG = 0.990
-                targetSg = 0.990 + (targetValue / 131.25);
+                const abvMultiplier = getAbvMultiplier();
+                targetSg = 0.990 + (targetValue / abvMultiplier);
             } else if (targetType === 'abv-sweet') {
                 if (isNaN(sweetFg) || sweetFg < 0.990) {
                     calcTargetSgOutput.textContent = 'Need valid FG';
@@ -345,13 +756,11 @@
                     return;
                 }
                 finalSg = sweetFg;
-                targetSg = sweetFg + (targetValue / 131.25);
+                const abvMultiplier = getAbvMultiplier();
+                targetSg = sweetFg + (targetValue / abvMultiplier);
                 sweetFinalSgOutput.textContent = sweetFg.toFixed(4);
             }
             
-            // Calculate sugar needed
-            // Sugar adds approximately 0.046 SG points per kg per liter
-            // Or approximately 46 gravity points per kg per liter
             const sgIncrease = targetSg - initialSg;
             if (sgIncrease <= 0) {
                 calcTargetSgOutput.textContent = 'Already above target';
@@ -361,14 +770,12 @@
                 return;
             }
             
-            // Sugar addition: kg = (SG increase × volume in liters) / 0.046
-            const sugarKg = (sgIncrease * volumeLiters) / 0.046;
+            const sugarKg = (sgIncrease * volumeLiters) / 0.36;
             const sugarGrams = sugarKg * 1000;
             
-            // Calculate expected ABV
-            const expectedAbv = (targetSg - finalSg) * 131.25;
+            const abvMultiplier = getAbvMultiplier();
+            const expectedAbv = (targetSg - finalSg) * abvMultiplier;
             
-            // Display results
             calcTargetSgOutput.textContent = targetSg.toFixed(4);
             calcTargetBrixOutput.textContent = sgToBrix(targetSg).toFixed(2) + '°Bx';
             sugarAmountOutput.textContent = sugarKg.toFixed(3) + ' kg (' + sugarGrams.toFixed(0) + ' g)';
@@ -388,8 +795,6 @@
                 return;
             }
             
-            // Temperature correction for SG
-            // Standard correction factor: approximately 0.00031 per degree C
             const tempDiff = temp - 20;
             const correctionFactor = 0.00031 * tempDiff;
             const sgCorrected = sg + correctionFactor;
@@ -397,17 +802,15 @@
             const brixCurrent = sgToBrix(sg);
             const brix20 = sgToBrix(sgCorrected);
             
-            // Calculate ABV if fermented dry (final gravity 0.990)
             const finalGravity = 0.990;
-            // ABV formula: (OG - FG) * 131.25
-            const abv = (sgCorrected - finalGravity) * 131.25;
+            const abvMultiplier = getAbvMultiplier();
+            const abv = (sgCorrected - finalGravity) * abvMultiplier;
             
-            // Calculate target FG for desired ABV
             const targetAbv = parseFloat(targetAbvInput.value);
+            const abvMultiplier2 = getAbvMultiplier();
             let targetFgText = '-';
             if (!isNaN(targetAbv)) {
-                // Rearranging ABV formula: FG = OG - (ABV / 131.25)
-                const targetFg = sgCorrected - (targetAbv / 131.25);
+                const targetFg = sgCorrected - (targetAbv / abvMultiplier2);
                 if (targetFg >= 0.990 && targetFg < sgCorrected) {
                     targetFgText = targetFg.toFixed(4);
                 } else if (targetFg < 0.990) {
@@ -417,7 +820,6 @@
                 }
             }
             
-            // Display results
             sg20Output.textContent = sgCorrected.toFixed(4);
             brixCurrentOutput.textContent = brixCurrent.toFixed(2) + '°Bx';
             brix20Output.textContent = brix20.toFixed(2) + '°Bx';
@@ -437,20 +839,18 @@
                 return;
             }
             
-            // Temperature correction for FG
             const fgTempDiff = fgTemp - 20;
             const fgCorrectionFactor = 0.00031 * fgTempDiff;
             const fgCorrected = fgMeasured + fgCorrectionFactor;
             
-            // Calculate actual ABV
             let actualAbvText = '-';
             let comparisonText = '-';
             
             if (!isNaN(ogCorrected)) {
-                const actualAbv = (ogCorrected - fgCorrected) * 131.25;
+                const abvMultiplier = getAbvMultiplier();
+                const actualAbv = (ogCorrected - fgCorrected) * abvMultiplier;
                 actualAbvText = actualAbv.toFixed(2) + '%';
                 
-                // Compare to target FG if available
                 const targetFgValue = parseFloat(targetFgOutput.textContent);
                 if (!isNaN(targetFgValue)) {
                     const difference = fgCorrected - targetFgValue;
@@ -472,17 +872,357 @@
         sgInput.addEventListener('input', calculateResults);
         tempInput.addEventListener('input', calculateResults);
         targetAbvInput.addEventListener('input', calculateResults);
+        abvFormulaSelect.addEventListener('change', calculateResults);
         
         fgMeasuredInput.addEventListener('input', calculateFinalGravity);
         fgTempInput.addEventListener('input', calculateFinalGravity);
         sgInput.addEventListener('input', calculateFinalGravity);
         tempInput.addEventListener('input', calculateFinalGravity);
         targetAbvInput.addEventListener('input', calculateFinalGravity);
+        abvFormulaSelect.addEventListener('change', calculateFinalGravity);
         
         initialSgInput.addEventListener('input', calculateSugarAddition);
         volumeLitersInput.addEventListener('input', calculateSugarAddition);
         targetValueInput.addEventListener('input', calculateSugarAddition);
         sweetFgInput.addEventListener('input', calculateSugarAddition);
+        abvFormulaSelect.addEventListener('change', calculateSugarAddition);
+        
+        // pH and Acid Management
+        const phMeasuredInput = document.getElementById('phMeasured');
+        const phTempInput = document.getElementById('phTemp');
+        const phVolumeInput = document.getElementById('phVolume');
+        const targetPhInput = document.getElementById('targetPh');
+        const acidTypeSelect = document.getElementById('acidType');
+        const phCorrectedOutput = document.getElementById('phCorrected');
+        const acidAmountOutput = document.getElementById('acidAmount');
+        const taIncreaseOutput = document.getElementById('taIncrease');
+        
+        function calculatePh() {
+            const phMeasured = parseFloat(phMeasuredInput.value);
+            const phTemp = parseFloat(phTempInput.value);
+            const phVolume = parseFloat(phVolumeInput.value);
+            const targetPh = parseFloat(targetPhInput.value);
+            const acidType = acidTypeSelect.value;
+            
+            if (isNaN(phMeasured) || isNaN(phTemp)) {
+                phCorrectedOutput.textContent = '-';
+                acidAmountOutput.textContent = '-';
+                taIncreaseOutput.textContent = '-';
+                return;
+            }
+            
+            const tempDiff = phTemp - 20;
+            const phCorrected = phMeasured - (tempDiff * 0.003);
+            phCorrectedOutput.textContent = phCorrected.toFixed(2);
+            
+            if (isNaN(targetPh) || isNaN(phVolume)) {
+                acidAmountOutput.textContent = '-';
+                taIncreaseOutput.textContent = '-';
+                return;
+            }
+            
+            const phDrop = phCorrected - targetPh;
+            if (phDrop <= 0) {
+                acidAmountOutput.textContent = 'pH already at or below target';
+                taIncreaseOutput.textContent = '-';
+                return;
+            }
+            
+            let acidFactor;
+            let taFactor;
+            
+            if (acidType === 'malic') {
+                acidFactor = 0.22;
+                taFactor = 1.12;
+            } else if (acidType === 'tartaric') {
+                acidFactor = 0.18;
+                taFactor = 1.0;
+            } else if (acidType === 'citric') {
+                acidFactor = 0.26;
+                taFactor = 0.7;
+            } else {
+                acidFactor = 0.20;
+                taFactor = 0.95;
+            }
+            
+            const acidPerLiter = acidFactor * (phDrop / 0.1);
+            const totalAcid = acidPerLiter * phVolume;
+            const recommendedAcid = totalAcid * 0.6;
+            
+            const taIncrease = acidPerLiter * taFactor;
+            
+            acidAmountOutput.textContent = recommendedAcid.toFixed(1) + ' g (60% of calculated ' + totalAcid.toFixed(1) + ' g)';
+            taIncreaseOutput.textContent = '+' + taIncrease.toFixed(2) + ' g/L';
+        }
+        
+        phMeasuredInput.addEventListener('input', calculatePh);
+        phTempInput.addEventListener('input', calculatePh);
+        phVolumeInput.addEventListener('input', calculatePh);
+        targetPhInput.addEventListener('input', calculatePh);
+        acidTypeSelect.addEventListener('change', calculatePh);
+        
+        // SO2 Management
+        const so2PhInput = document.getElementById('so2Ph');
+        const so2VolumeInput = document.getElementById('so2Volume');
+        const so2DosageSelect = document.getElementById('so2Dosage');
+        const so2PpmOutput = document.getElementById('so2Ppm');
+        const metabisulphiteOutput = document.getElementById('metabisulphite');
+        const campdenTabletsOutput = document.getElementById('campdenTablets');
+        
+        function calculateSo2() {
+            const ph = parseFloat(so2PhInput.value);
+            const volume = parseFloat(so2VolumeInput.value);
+            const dosage = so2DosageSelect.value;
+            
+            if (isNaN(ph) || isNaN(volume)) {
+                so2PpmOutput.textContent = '-';
+                metabisulphiteOutput.textContent = '-';
+                campdenTabletsOutput.textContent = '-';
+                return;
+            }
+            
+            let so2Ppm;
+            if (ph >= 3.8) so2Ppm = 185;
+            else if (ph >= 3.7) so2Ppm = 150;
+            else if (ph >= 3.6) so2Ppm = 125;
+            else if (ph >= 3.5) so2Ppm = 105;
+            else if (ph >= 3.4) so2Ppm = 85;
+            else if (ph >= 3.3) so2Ppm = 72;
+            else if (ph >= 3.2) so2Ppm = 60;
+            else if (ph >= 3.1) so2Ppm = 50;
+            else so2Ppm = 0;
+            
+            // Apply half dosage if selected
+            if (dosage === 'half') {
+                so2Ppm = so2Ppm / 2;
+            }
+            
+            if (so2Ppm === 0) {
+                so2PpmOutput.textContent = 'None needed (pH < 3.0)';
+                metabisulphiteOutput.textContent = '0 g';
+                campdenTabletsOutput.textContent = '0 tablets';
+                return;
+            }
+            
+            const metabisulphiteGrams = (so2Ppm * volume) / 570;
+            const campdenTablets = (so2Ppm * volume) / (50 * 4.546);
+            
+            so2PpmOutput.textContent = so2Ppm.toFixed(1) + ' ppm';
+            metabisulphiteOutput.textContent = metabisulphiteGrams.toFixed(2) + ' g';
+            campdenTabletsOutput.textContent = campdenTablets.toFixed(1) + ' tablets';
+        }
+        
+        so2PhInput.addEventListener('input', calculateSo2);
+        so2VolumeInput.addEventListener('input', calculateSo2);
+        so2DosageSelect.addEventListener('change', calculateSo2);
+        
+        // PPM Calculator
+        const ppmValueInput = document.getElementById('ppmValue');
+        const ppmVolumeInput = document.getElementById('ppmVolume');
+        const ppmGramsOutput = document.getElementById('ppmGrams');
+        const ppmMgOutput = document.getElementById('ppmMg');
+        const ppmMlOutput = document.getElementById('ppmMl');
+        
+        function calculatePpm() {
+            const ppm = parseFloat(ppmValueInput.value);
+            const volume = parseFloat(ppmVolumeInput.value);
+            
+            if (isNaN(ppm) || isNaN(volume)) {
+                ppmGramsOutput.textContent = '-';
+                ppmMgOutput.textContent = '-';
+                ppmMlOutput.textContent = '-';
+                return;
+            }
+            
+            // PPM = mg/L, so total mg = ppm × volume
+            const totalMg = ppm * volume;
+            const totalGrams = totalMg / 1000;
+            const totalMl = totalGrams; // Assuming density ≈ 1 g/ml
+            
+            ppmGramsOutput.textContent = totalGrams.toFixed(3) + ' g';
+            ppmMgOutput.textContent = totalMg.toFixed(1) + ' mg';
+            ppmMlOutput.textContent = totalMl.toFixed(3) + ' ml';
+        }
+        
+        ppmValueInput.addEventListener('input', calculatePpm);
+        ppmVolumeInput.addEventListener('input', calculatePpm);
+        
+        // Blending Calculator
+        const blendVolAInput = document.getElementById('blendVolA');
+        const blendAbvAInput = document.getElementById('blendAbvA');
+        const blendSgAInput = document.getElementById('blendSgA');
+        const blendVolBInput = document.getElementById('blendVolB');
+        const blendAbvBInput = document.getElementById('blendAbvB');
+        const blendSgBInput = document.getElementById('blendSgB');
+        const blendTotalVolOutput = document.getElementById('blendTotalVol');
+        const blendFinalAbvOutput = document.getElementById('blendFinalAbv');
+        const blendFinalSgOutput = document.getElementById('blendFinalSg');
+        
+        function calculateBlending() {
+            const volA = parseFloat(blendVolAInput.value);
+            const abvA = parseFloat(blendAbvAInput.value);
+            const sgA = parseFloat(blendSgAInput.value);
+            const volB = parseFloat(blendVolBInput.value);
+            const abvB = parseFloat(blendAbvBInput.value);
+            const sgB = parseFloat(blendSgBInput.value);
+            
+            if (isNaN(volA) || isNaN(volB)) {
+                blendTotalVolOutput.textContent = '-';
+                blendFinalAbvOutput.textContent = '-';
+                blendFinalSgOutput.textContent = '-';
+                return;
+            }
+            
+            const totalVol = volA + volB;
+            blendTotalVolOutput.textContent = totalVol.toFixed(2) + ' L';
+            
+            if (!isNaN(abvA) && !isNaN(abvB)) {
+                const finalAbv = (abvA * volA + abvB * volB) / totalVol;
+                blendFinalAbvOutput.textContent = finalAbv.toFixed(2) + '%';
+            } else {
+                blendFinalAbvOutput.textContent = '-';
+            }
+            
+            if (!isNaN(sgA) && !isNaN(sgB)) {
+                const finalSg = (sgA * volA + sgB * volB) / totalVol;
+                blendFinalSgOutput.textContent = finalSg.toFixed(4);
+            } else {
+                blendFinalSgOutput.textContent = '-';
+            }
+        }
+        
+        blendVolAInput.addEventListener('input', calculateBlending);
+        blendAbvAInput.addEventListener('input', calculateBlending);
+        blendSgAInput.addEventListener('input', calculateBlending);
+        blendVolBInput.addEventListener('input', calculateBlending);
+        blendAbvBInput.addEventListener('input', calculateBlending);
+        blendSgBInput.addEventListener('input', calculateBlending);
+        
+        // Dilution Calculator
+        const dilOrigVolInput = document.getElementById('dilOrigVol');
+        const dilOrigAbvInput = document.getElementById('dilOrigAbv');
+        const dilOrigSgInput = document.getElementById('dilOrigSg');
+        const dilTargetAbvInput = document.getElementById('dilTargetAbv');
+        const dilWaterAddOutput = document.getElementById('dilWaterAdd');
+        const dilFinalVolOutput = document.getElementById('dilFinalVol');
+        const dilFinalSgOutput = document.getElementById('dilFinalSg');
+        
+        function calculateDilution() {
+            const origVol = parseFloat(dilOrigVolInput.value);
+            const origAbv = parseFloat(dilOrigAbvInput.value);
+            const origSg = parseFloat(dilOrigSgInput.value);
+            const targetAbv = parseFloat(dilTargetAbvInput.value);
+            
+            if (isNaN(origVol) || isNaN(origAbv) || isNaN(targetAbv)) {
+                dilWaterAddOutput.textContent = '-';
+                dilFinalVolOutput.textContent = '-';
+                dilFinalSgOutput.textContent = '-';
+                return;
+            }
+            
+            if (targetAbv >= origAbv) {
+                dilWaterAddOutput.textContent = 'Target ABV must be lower';
+                dilFinalVolOutput.textContent = '-';
+                dilFinalSgOutput.textContent = '-';
+                return;
+            }
+            
+            const finalVol = (origVol * origAbv) / targetAbv;
+            const waterAdd = finalVol - origVol;
+            
+            dilWaterAddOutput.textContent = waterAdd.toFixed(2) + ' L';
+            dilFinalVolOutput.textContent = finalVol.toFixed(2) + ' L';
+            
+            if (!isNaN(origSg)) {
+                const finalSg = 1.0 + ((origSg - 1.0) * (origVol / finalVol));
+                dilFinalSgOutput.textContent = finalSg.toFixed(4);
+            } else {
+                dilFinalSgOutput.textContent = '-';
+            }
+        }
+        
+        dilOrigVolInput.addEventListener('input', calculateDilution);
+        dilOrigAbvInput.addEventListener('input', calculateDilution);
+        dilOrigSgInput.addEventListener('input', calculateDilution);
+        dilTargetAbvInput.addEventListener('input', calculateDilution);
+        
+        // Weight Conversion
+        const weightInput = document.getElementById('weightInput');
+        const weightUnitSelect = document.getElementById('weightUnit');
+        const convGramsOutput = document.getElementById('convGrams');
+        const convKgOutput = document.getElementById('convKg');
+        const convOzOutput = document.getElementById('convOz');
+        const convLbsOutput = document.getElementById('convLbs');
+        
+        function calculateWeightConversion() {
+            const value = parseFloat(weightInput.value);
+            const unit = weightUnitSelect.value;
+            
+            if (isNaN(value)) {
+                convGramsOutput.textContent = '-';
+                convKgOutput.textContent = '-';
+                convOzOutput.textContent = '-';
+                convLbsOutput.textContent = '-';
+                return;
+            }
+            
+            let grams;
+            if (unit === 'g') grams = value;
+            else if (unit === 'kg') grams = value * 1000;
+            else if (unit === 'oz') grams = value * 28.3495;
+            else if (unit === 'lbs') grams = value * 453.592;
+            
+            convGramsOutput.textContent = grams.toFixed(2) + ' g';
+            convKgOutput.textContent = (grams / 1000).toFixed(3) + ' kg';
+            convOzOutput.textContent = (grams / 28.3495).toFixed(2) + ' oz';
+            convLbsOutput.textContent = (grams / 453.592).toFixed(3) + ' lbs';
+        }
+        
+        weightInput.addEventListener('input', calculateWeightConversion);
+        weightUnitSelect.addEventListener('change', calculateWeightConversion);
+        
+        // Volume Conversion
+        const volumeInput = document.getElementById('volumeInput');
+        const volumeUnitSelect = document.getElementById('volumeUnit');
+        const convLitersOutput = document.getElementById('convLiters');
+        const convMlOutput = document.getElementById('convMl');
+        const convUkGalOutput = document.getElementById('convUkGal');
+        const convUsGalOutput = document.getElementById('convUsGal');
+        const convUkPintOutput = document.getElementById('convUkPint');
+        const convUsPintOutput = document.getElementById('convUsPint');
+        
+        function calculateVolumeConversion() {
+            const value = parseFloat(volumeInput.value);
+            const unit = volumeUnitSelect.value;
+            
+            if (isNaN(value)) {
+                convLitersOutput.textContent = '-';
+                convMlOutput.textContent = '-';
+                convUkGalOutput.textContent = '-';
+                convUsGalOutput.textContent = '-';
+                convUkPintOutput.textContent = '-';
+                convUsPintOutput.textContent = '-';
+                return;
+            }
+            
+            let liters;
+            if (unit === 'l') liters = value;
+            else if (unit === 'ml') liters = value / 1000;
+            else if (unit === 'ukgal') liters = value * 4.54609;
+            else if (unit === 'usgal') liters = value * 3.78541;
+            else if (unit === 'ukpint') liters = value * 0.568261;
+            else if (unit === 'uspint') liters = value * 0.473176;
+            
+            convLitersOutput.textContent = liters.toFixed(3) + ' L';
+            convMlOutput.textContent = (liters * 1000).toFixed(1) + ' ml';
+            convUkGalOutput.textContent = (liters / 4.54609).toFixed(3) + ' UK gal';
+            convUsGalOutput.textContent = (liters / 3.78541).toFixed(3) + ' US gal';
+            convUkPintOutput.textContent = (liters / 0.568261).toFixed(2) + ' UK pints';
+            convUsPintOutput.textContent = (liters / 0.473176).toFixed(2) + ' US pints';
+        }
+        
+        volumeInput.addEventListener('input', calculateVolumeConversion);
+        volumeUnitSelect.addEventListener('change', calculateVolumeConversion);
     </script>
 </body>
 </html>
